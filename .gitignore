@@ -179,3 +179,15 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+#Additional Ignore items
+# Environment variables / secrets
+.env.*
+!.env.example
+
+# Generated FreshMart datasets
+data/generated/*.csv
+data/generated/*.json
+data/generated/*.parquet
+
+# macOS
+.DS_Store
