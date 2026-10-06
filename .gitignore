@@ -191,3 +191,7 @@ data/generated/*.parquet
 
 # macOS
 .DS_Store
+
+#Lambda
+lambda/**/package/
+lambda/**/*.zip

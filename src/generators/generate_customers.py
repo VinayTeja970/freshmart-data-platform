@@ -3,8 +3,11 @@ import uuid
 from pathlib import Path
 
 from faker import Faker
+from datetime import date
 
-from src.validation.validate_customers import validate_customers
+from src.validation.generic_validator import validate_records
+
+from src.ingestion.upload_to_s3 import upload_file_to_s3
 
 fake = Faker("en_US")
 Faker.seed(42)
@@ -38,15 +41,15 @@ for i in range(5):
 
 
 #Validate before writing
-validation_errors = validate_customers(customers)
+result = validate_records("customers", customers)
 
-if validation_errors:
-    print("Customer validation FAILED:")
+if result["errors"]:
+    print("Customer validation FAILED")
 
-    for error in validation_errors:
-        print(f" - {error}")
+    for error in result["errors"]:
+        print(error)
 
-    raise SystemExit(1)
+    raise ValueError("Customer validation failed")
 
 print("Customer validation PASSED")
 
@@ -63,3 +66,16 @@ with output_path.open("w", newline="", encoding="utf-8") as file:
 
 print(f"Generated {len(customers)} customers")
 print(f"Saved to: {output_path}")
+
+load_date = date.today().isoformat()
+
+s3_key = (
+    f"raw/customers/"
+    f"load_date={load_date}/"
+    f"customers.csv"
+)
+
+upload_file_to_s3(
+    local_file=output_path,
+    s3_key=s3_key
+)
